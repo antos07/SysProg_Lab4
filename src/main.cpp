@@ -1,12 +1,9 @@
 #include <iostream>
 #include "grammar.hpp"
+#include "readers.hpp"
 
 int main() {
-    grammar::Grammar grammar{
-            {'A', grammar::GrammarRuleOutput{{'a'}}},
-            {'A', grammar::GrammarRuleOutput{{'b'}}},
-            {'A', grammar::GrammarRuleOutput{{'a', 'A', 'b'}}},
-    };
+    grammar::Grammar grammar{readers::ReadGrammar(std::cin)};
 
     for (const auto &[ruleInput, ruleOutput] : grammar) {
         std::cout << ruleInput << " → " << ruleOutput << '\n';
