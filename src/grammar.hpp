@@ -18,6 +18,10 @@ namespace grammar {
 
         explicit GrammarRuleOutput(std::vector<char> &&symbols);
 
+        const std::vector<char>& getSymbols() const {
+            return symbols_;
+        }
+
         friend std::ostream &operator<<(std::ostream &out, const GrammarRuleOutput &grammarRuleOutput);
 
         [[nodiscard]] std::string toString() const;

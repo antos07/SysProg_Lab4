@@ -40,7 +40,6 @@ namespace readers {
         while (!in.eof()) {
             std::string line{};
             std::getline(in, line);
-
             if (std::regex_match(line, std::regex {"^\\s*$"})) {
                 // An empty string.
                 continue;
