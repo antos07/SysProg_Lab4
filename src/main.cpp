@@ -66,28 +66,27 @@ std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& 
 
                 char leftSideRule = rule.first;
                 if (leftSideRule != nonTerminal) continue;
-                auto rightSideRule = rule.second.getSymbols(); 
+                auto rightSideRule = rule.second.getSymbols();
 
-                if (isTerminal(rightSideRule[0])){
+                bool continueFlag = false;
+                for(int i = 0; i < rightSideRule.size(); i++){
 
-                    if(isInVector(rightSideRule[0], column.second)) continue;
-                    column.second.push_back(rightSideRule[0]);
-                    notChanged = false;
-                    
-                }else{
+                    if(isTerminal(rightSideRule[i])){
+                        if(isInVector(rightSideRule[i], column.second)) continue;
+                        column.second.push_back(rightSideRule[i]);
+                        notChanged = false;
+                        break;
+                    }
 
-                    bool continueFlag = false;
-                    for(int i = 0; i < rightSideRule.size(); i++) {
-                        std::vector<char> first = getFirst_k(table, rightSideRule[i]);
-                        if(first.empty()) break;
-                        for (char a: first) {
-                            if (a == epsilon) continueFlag = true;
-                            if (!isInVector(a, column.second)) {
-                                column.second.push_back(a);
-                                notChanged = false;
-                            }
-                            if (!continueFlag) break;
+                    std::vector<char> first = getFirst_k(table, rightSideRule[i]);
+                    if(first.empty()) break;
+                    for (char a: first) {
+                        if (a == epsilon) continueFlag = true;
+                        if (!isInVector(a, column.second)) {
+                            column.second.push_back(a);
+                            notChanged = false;
                         }
+                        if (!continueFlag) break;
                     }
                 }
             }
