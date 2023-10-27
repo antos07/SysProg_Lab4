@@ -2,7 +2,6 @@
 #include "grammar.hpp"
 #include "readers.hpp"
 #include <vector>
-
 char epsilon = 'e';
 
 bool isTerminal(char a){
@@ -45,6 +44,7 @@ std::vector<char> getFirst_k(std::vector<std::pair<char, std::vector<char>>> fir
 //.!.   εつ▄█▀█●
 //8====o
 
+
 std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& g){
 
     std::vector<std::pair<char, std::vector<char>>> table;
@@ -76,20 +76,24 @@ std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& 
                     
                 }else{
 
-                    std::vector<char> first = getFirst_k(table, rightSideRule[0]);
-                    if(first.empty()) continue;
-                    for (char a : first) {
-                        if(isInVector(a, column.second)) continue;
-                        column.second.push_back(a);
-                        notChanged = false;
+                    bool continueFlag = false;
+                    for(int i = 0; i < rightSideRule.size(); i++) {
+                        std::vector<char> first = getFirst_k(table, rightSideRule[i]);
+                        if(first.empty()) break;
+                        for (char a: first) {
+                            if (a == epsilon) continueFlag = true;
+                            if (!isInVector(a, column.second)) {
+                                column.second.push_back(a);
+                                notChanged = false;
+                            }
+                            if (!continueFlag) break;
+                        }
                     }
-
                 }
             }
         }
 
     }while (!notChanged);
-
     return table;
 }
 
