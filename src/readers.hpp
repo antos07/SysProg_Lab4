@@ -22,6 +22,8 @@ namespace readers {
     };
 
     grammar::Grammar ReadGrammar(std::istream &in);
+
+    std::vector<char> ReadTokens(std::istream &in);
 }
 
 #endif //SYSPROG_LAB4_READERS_HPP

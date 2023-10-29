@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <format>
+#include <iterator>
 #include "grammar.hpp"
 #include "readers.hpp"
 
@@ -15,12 +16,19 @@ int main(int argc, char *argv[]) {
         std::perror("The grammar file");
         return EXIT_FAILURE;
     }
+    std::ifstream inputFile{argv[2]};;
+    if (!inputFile.is_open()) {
+        std::perror("The input file");
+        return EXIT_FAILURE;
+    }
 
     grammar::Grammar grammar{readers::ReadGrammar(grammarFile)};
-
     for (const auto &[ruleInput, ruleOutput] : grammar) {
         std::cout << ruleInput << " → " << ruleOutput << '\n';
     }
+
+    std::vector<char> tokens{readers::ReadTokens(inputFile)};
+    std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
 
     return EXIT_SUCCESS;
 }
