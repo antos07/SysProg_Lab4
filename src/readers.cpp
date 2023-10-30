@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <iterator>
 #include <regex>
 #include <utility>
 #include "readers.hpp"
@@ -49,6 +50,10 @@ namespace readers {
         }
 
         return inputGrammar;
+    }
+
+    std::vector<char> ReadTokens(std::istream &in) {
+        return {std::istream_iterator<char>{in}, std::istream_iterator<char>{}};
     }
 
     ReaderException::ReaderException(std::string message) : message_{std::move(message)} {
