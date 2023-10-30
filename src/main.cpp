@@ -36,6 +36,7 @@ std::vector<char> getNonterminals(const grammar::Grammar& g) {
     return nonTerminals;
 }
 
+/*
 std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nonterm) {
 
     for (const auto& first_k : first_kTable) {
@@ -44,7 +45,7 @@ std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nont
     }
 
     return std::set<char>{};
-}
+}*/
 
 //.!.   εつ▄█▀█●
 //8====o
@@ -84,7 +85,7 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
                         break;
                     }
 
-                    std::set<char> first = getFirst_k(table, rightSideRule[i]);
+                    std::set<char> first = table[rightSideRule[i]];
                     if(first.empty()) break;
                     for (char a: first) {
                         if (a == epsilon) continueFlag = true;
