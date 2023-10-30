@@ -12,7 +12,7 @@
 char epsilon = 'e';
 
 bool isTerminal(char a){
-    if((islower(a))) return true;
+    if(islower(a)) return true;
     return false;
 }
 
@@ -36,7 +36,7 @@ std::vector<char> getNonterminals(const grammar::Grammar& g) {
     return nonTerminals;
 }
 
-
+/* since now map is used to store first k, this function is not needed
 std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nonterm) {
 
     for (const auto& first_k : first_kTable) {
@@ -46,12 +46,13 @@ std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nont
 
     return std::set<char>{};
 }
+*/
 
 //.!.   εつ▄█▀█●
 //8====o
 
 
-std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
+std::map<char, std::set<char>> firstK(const grammar::Grammar& g){
 
     std::map<char, std::set<char>> table;
     std::vector<char> nonTerminals = getNonterminals(g);
@@ -75,24 +76,26 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
                 auto rightSideRule = rule.second.getSymbols();
 
                 bool continueFlag = false;
-                for(int i = 0; i < rightSideRule.size(); i++){
+                for(char i : rightSideRule){
 
-                    if(isTerminal(rightSideRule[i])){
+                    if(isTerminal(i)){
 
-                        if(column.second.count(rightSideRule[i]) == 0) notChanged = false;
-                        column.second.insert(rightSideRule[i]);
+                        if(column.second.count(i) == 0){
+                            notChanged = false;
+                            column.second.insert(i);
+                        }
                         break;
                     }
 
-                    std::set<char> first = table[rightSideRule[i]];
+                    std::set<char> first = table[i];
                     if(first.empty()) break;
 
                     for (char a: first) {
-                        if (a == epsilon) continueFlag = true;
 
-                        if(column.second.count(a) == 0) {
-                            column.second.insert(a);
+                        if (a == epsilon) continueFlag = true;
+                        if(column.second.count(a) == 0){
                             notChanged = false;
+                            column.second.insert(a);
                         }
                     }
 
@@ -147,7 +150,7 @@ int main(int argc, char *argv[]) {
         std::cout << ruleInput << " - " << ruleOutput << '\n';
     }
 
-    std::map<char, std::set<char>> result = first_k(grammar);
+    std::map<char, std::set<char>> result = firstK(grammar);
     displayFirstK(result);
 
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
