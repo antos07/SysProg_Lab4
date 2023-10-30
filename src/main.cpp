@@ -36,7 +36,7 @@ std::vector<char> getNonterminals(const grammar::Grammar& g) {
     return nonTerminals;
 }
 
-/*
+
 std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nonterm) {
 
     for (const auto& first_k : first_kTable) {
@@ -45,7 +45,7 @@ std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nont
     }
 
     return std::set<char>{};
-}*/
+}
 
 //.!.   εつ▄█▀█●
 //8====o
@@ -66,8 +66,8 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
 
         notChanged = true;
         for (auto& column : table) {
-            char nonTerminal = column.first;
 
+            char nonTerminal = column.first;
             for (const auto& rule : g) {
 
                 char leftSideRule = rule.first;
@@ -79,14 +79,14 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
 
                     if(isTerminal(rightSideRule[i])){
 
-                        if(column.second.count(rightSideRule[i]) > 0) continue;
+                        if(column.second.count(rightSideRule[i]) == 0) notChanged = false;
                         column.second.insert(rightSideRule[i]);
-                        notChanged = false;
                         break;
                     }
 
                     std::set<char> first = table[rightSideRule[i]];
                     if(first.empty()) break;
+
                     for (char a: first) {
                         if (a == epsilon) continueFlag = true;
 
@@ -94,9 +94,9 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
                             column.second.insert(a);
                             notChanged = false;
                         }
-
-                        if (!continueFlag) break;
                     }
+
+                    if (!continueFlag) break;
                 }
             }
         }
@@ -107,6 +107,7 @@ std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
 
 
 void displayFirstK(const std::map<char, std::set<char>>& result) {
+
     for (const auto& entry : result) {
         char nonTerminal = entry.first;
         const std::set<char>& firstKSet = entry.second;
