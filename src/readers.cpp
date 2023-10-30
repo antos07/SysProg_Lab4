@@ -10,7 +10,7 @@
 
 namespace readers {
     static grammar::GrammarRule ParseRule(std::string &&line) {
-        std::regex ruleRegex{R"(\s*([A-Z])\s*→\s*(?:([a-zA-Z])\s*)+\n?)"};
+        std::regex ruleRegex{R"(\s*([A-Z])\s*→\s*((?:[a-zA-Z]\s*)+))"};
 
         std::smatch match;
         if (!std::regex_match(line, match, ruleRegex)) {
@@ -19,9 +19,11 @@ namespace readers {
 
         char ruleInput{match[1].str()[0]}; // It's the first symbol of the first match.
 
+        std::istringstream parser{match[2].str()}; // Init with the right side of the rule.
         std::vector<char> ruleOutputSequence{};
-        for (size_t i = 2; i < match.size(); ++i) {  // all groups starting from the second
-            ruleOutputSequence.emplace_back(match[i].str()[0]);  // the first symbol of a match.
+        char ruleOutputElement{};
+        while (parser >> ruleOutputElement) {
+            ruleOutputSequence.emplace_back(ruleOutputElement);
         }
 
         return {ruleInput, grammar::GrammarRuleOutput{std::move(ruleOutputSequence)}};
