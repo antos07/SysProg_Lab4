@@ -2,6 +2,13 @@
 #include "grammar.hpp"
 #include "readers.hpp"
 #include <vector>
+#include <format>
+#include <cstdlib>
+#include <fstream>
+#include <iterator>
+#include <map>
+#include <set>
+
 char epsilon = 'e';
 
 bool isTerminal(char a){
@@ -12,9 +19,7 @@ bool isTerminal(char a){
 bool isInVector(char symbolToFind, const std::vector<char>& charVector) {
 
     for (char c : charVector) {
-        if (c == symbolToFind) {
-            return true;
-        }
+        if (c == symbolToFind) return true;
     }
     return false;
 }
@@ -31,27 +36,27 @@ std::vector<char> getNonterminals(const grammar::Grammar& g) {
     return nonTerminals;
 }
 
-std::vector<char> getFirst_k(std::vector<std::pair<char, std::vector<char>>> first_kTable, char nonterm) {
+std::set<char> getFirst_k(std::map<char, std::set<char>> first_kTable, char nonterm) {
 
     for (const auto& first_k : first_kTable) {
         char c = first_k.first;
         if(c == nonterm) return first_k.second;
     }
 
-    return std::vector<char>{};
+    return std::set<char>{};
 }
 
 //.!.   εつ▄█▀█●
 //8====o
 
 
-std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& g){
+std::map<char, std::set<char>> first_k(const grammar::Grammar& g){
 
-    std::vector<std::pair<char, std::vector<char>>> table;
+    std::map<char, std::set<char>> table;
     std::vector<char> nonTerminals = getNonterminals(g);
 
     for (const char c : nonTerminals) {
-        table.push_back(std::make_pair(c, std::vector<char>{}));
+        table[c] = std::set<char>();
     }
 
     bool notChanged;
@@ -72,20 +77,23 @@ std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& 
                 for(int i = 0; i < rightSideRule.size(); i++){
 
                     if(isTerminal(rightSideRule[i])){
-                        if(isInVector(rightSideRule[i], column.second)) continue;
-                        column.second.push_back(rightSideRule[i]);
+
+                        if(column.second.count(rightSideRule[i]) > 0) continue;
+                        column.second.insert(rightSideRule[i]);
                         notChanged = false;
                         break;
                     }
 
-                    std::vector<char> first = getFirst_k(table, rightSideRule[i]);
+                    std::set<char> first = getFirst_k(table, rightSideRule[i]);
                     if(first.empty()) break;
                     for (char a: first) {
                         if (a == epsilon) continueFlag = true;
-                        if (!isInVector(a, column.second)) {
-                            column.second.push_back(a);
+
+                        if(column.second.count(a) == 0) {
+                            column.second.insert(a);
                             notChanged = false;
                         }
+
                         if (!continueFlag) break;
                     }
                 }
@@ -96,7 +104,27 @@ std::vector<std::pair<char, std::vector<char>>> first_k(const grammar::Grammar& 
     return table;
 }
 
+
+void displayFirstK(const std::map<char, std::set<char>>& result) {
+    for (const auto& entry : result) {
+        char nonTerminal = entry.first;
+        const std::set<char>& firstKSet = entry.second;
+
+        std::cout << "First_k(" << nonTerminal << ") = {";
+        bool first = true;
+        for (char terminal : firstKSet) {
+            if (!first) {
+                std::cout << ", ";
+            }
+            std::cout << terminal;
+            first = false;
+        }
+        std::cout << "}" << std::endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
+
     if (argc != 3) {
         std::cerr << std::format("Usage: {} <path to the grammar file> <path to the input file>", argv[0]);
         return EXIT_FAILURE;
@@ -114,23 +142,11 @@ int main(int argc, char *argv[]) {
 
     grammar::Grammar grammar{readers::ReadGrammar(grammarFile)};
     for (const auto &[ruleInput, ruleOutput] : grammar) {
-        std::cout << ruleInput << " → " << ruleOutput << '\n';
+        std::cout << ruleInput << " - " << ruleOutput << '\n';
     }
 
-    std::vector<std::pair<char, std::vector<char>>> res = first_k(grammar);
-    for (const auto& pair : res) {
-        char nonTerminal = pair.first;
-        std::vector<char> firstSet = pair.second;
-
-        std::cout << "First(" << nonTerminal << ") = {";
-        for (size_t i = 0; i < firstSet.size(); ++i) {
-            std::cout << firstSet[i];
-            if (i < firstSet.size() - 1) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << "}" << std::endl;
-    }
+    std::map<char, std::set<char>> result = first_k(grammar);
+    displayFirstK(result);
 
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
