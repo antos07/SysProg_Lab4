@@ -7,4 +7,5 @@ add_executable(SysProg_Lab4 src/main.cpp
         src/grammar.cpp
         src/grammar.hpp
         src/readers.cpp
-        src/readers.hpp)
+        src/readers.hpp
+        src/firstfollow.cpp)
