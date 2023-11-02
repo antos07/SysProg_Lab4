@@ -18,7 +18,7 @@ namespace grammar {
 
         explicit GrammarRuleOutput(std::vector<char> &&symbols);
 
-        const std::vector<char>& getSymbols() const {
+        const std::vector<char> &getSymbols() const {
             return symbols_;
         }
 
@@ -30,6 +30,12 @@ namespace grammar {
 
     using GrammarRule = std::pair<char, GrammarRuleOutput>;
     using Grammar = std::vector<GrammarRule>;
+
+    bool isTerminal(char a);
+
+    bool isInVector(char symbolToFind, const std::vector<char> &charVector);
+
+    std::vector<char> getNonTerminals(const Grammar &g);
 }
 
 #endif //SYSPROG_LAB4_GRAMMAR_HPP
