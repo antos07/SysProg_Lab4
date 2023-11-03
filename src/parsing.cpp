@@ -72,14 +72,23 @@ namespace parsing {
         }
         char leftNonTerminal = grammar[0].first;
         rules.push(leftNonTerminal);
+        bool error_exist = false;
 
-//        while(!rules.empty()) {
+        do {
             char topOnLexeme = lexeme.top();
-            cout << leftNonTerminal;
             if (leftNonTerminal != topOnLexeme) {
+                cout <<managingTable[leftNonTerminal][topOnLexeme] << " ";
                 vector <char> rightRule = grammar[(managingTable[leftNonTerminal][topOnLexeme])-1].second;
+                for (int j = rightRule.size()-1; j >= 0; j--) {
+                    rules.push(rightRule[j]);
+                }
             }
-//        }
+            else {
+                lexeme.pop();
+            }
+            rules.pop();
+        }
+        while(!rules.empty());
 
 
     }
