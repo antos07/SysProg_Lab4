@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <map>
 #include "grammar.hpp"
 #include "parsing.hpp"
 
@@ -26,7 +27,7 @@ int main() {
     vector<char> nonTerminals = {'S', 'A', 'B', 'C', 'D'};
     vector<set<char>> terminalsInRules = {{'(', 'a'}, {'+'}, {'e', ')'}, {'(', 'a'},
                                           {'*'}, {'+', 'e', ')'}, {'('}, {'a'} };
-    parsing::managingTable(terminalsInRules, grammar);
+    parsing::syntacticAnalysis(grammar);
     //
 
     return 0;
