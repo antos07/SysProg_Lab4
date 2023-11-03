@@ -8,8 +8,9 @@
 #include <iterator>
 #include <map>
 #include <set>
-#include "regex"
-#include "firstfollow.h"
+#include "firstfollow.hpp"
+#include "parsing.hpp"
+
 
 int main(int argc, char *argv[]) {
 
@@ -29,17 +30,29 @@ int main(int argc, char *argv[]) {
     }
 
     grammar::Grammar grammar{readers::ReadGrammar(grammarFile)};
+    int ruleIndex{1};
     for (const auto &[ruleInput, ruleOutput]: grammar) {
-        std::cout << ruleInput << " - " << ruleOutput << '\n';
+        std::cout << ruleIndex << ") " << ruleInput << " - " << ruleOutput << '\n';
+        ++ruleIndex;
     }
 
-    std::map<char, std::set<char>> first = firstK(grammar);
-    displayResult(first, "First k");
+    std::map<char, std::set<char>> first = firstfollow::firstK(grammar);
+    firstfollow::displayResult(first, "First k");
     std::cout << '\n';
 
-    std::map<char, std::set<char>> follow = followK(grammar, firstK(grammar));
-    displayResult(follow, "Follow k");
+    std::map<char, std::set<char>> follow = firstfollow::followK(grammar, first);
+    firstfollow::displayResult(follow, "Follow k");
 
+    std::vector<std::set<char>> intermediateParsingTable{parsing::BuildIntermediateTable(grammar)};
+    std::cout << "\nIntermediate parsing table:\n";
+    for (int i = 0; i < intermediateParsingTable.size(); ++i) {
+        std::cout << i + 1 << ") {";
+        std::copy(intermediateParsingTable[i].begin(), intermediateParsingTable[i].end(),
+                  std::ostream_iterator<char>{std::cout, ", "});
+        std::cout << "}\n";
+    }
+
+    std::cout << "\nInput tokens:\n";
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
 
