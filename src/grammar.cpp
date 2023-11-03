@@ -9,6 +9,8 @@
 #include "grammar.hpp"
 
 namespace grammar {
+    const char epsilon = 'e';
+
     GrammarRuleOutput::GrammarRuleOutput(std::vector<char> &&symbols) : symbols_{std::move(symbols)} {
     }
 

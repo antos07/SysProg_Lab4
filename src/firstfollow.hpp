@@ -1,5 +1,5 @@
-#ifndef SYSPROG_LAB4_FIRSTFOLLOW_H
-#define SYSPROG_LAB4_FIRSTFOLLOW_H
+#ifndef SYSPROG_LAB4_FIRSTFOLLOW_HPP
+#define SYSPROG_LAB4_FIRSTFOLLOW_HPP
 
 #include <iostream>
 #include "grammar.hpp"
@@ -23,4 +23,4 @@ namespace firstfollow {
 }
 
 
-#endif //SYSPROG_LAB4_FIRSTFOLLOW_H
+#endif //SYSPROG_LAB4_FIRSTFOLLOW_HPP

@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace grammar {
+    extern const char epsilon;
+
     class GrammarRuleOutput {
         std::vector<char> symbols_;
 
