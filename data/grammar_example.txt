@@ -1,8 +1,8 @@
 S → B A
-A → d B A
+A → + B A
 A → e
 B → D C
-C → h D C
+C → * D C
 C → e
-D → b S c
+D → ( S )
 D → a

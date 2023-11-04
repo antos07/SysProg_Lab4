@@ -65,9 +65,9 @@ namespace parsing {
     }
 
      void createManagingTable(vector<set<char>> terminalsInRules, grammar::Grammar grammar, map<char, map<char, int>> &managingTable) {
-        bool checkedRules[8];
-        fill(checkedRules, checkedRules+8, false);
-        for (int i = 1; i <= 8; i++) {
+        bool checkedRules[grammar.size()];
+        fill(checkedRules, checkedRules+grammar.size(), false);
+        for (int i = 1; i <= grammar.size(); i++) {
             if (!checkedRules[i-1]) {
                 map<char, int> symbolMap;
                 char leftNonTerminal = grammar[i-1].first;
@@ -76,7 +76,7 @@ namespace parsing {
                         symbolMap.insert({sym, i});
                     }
                 }
-                for (int j = i+1; j <= 8; j++) {
+                for (int j = i+1; j <= grammar.size(); j++) {
                     if (grammar[j-1].first == leftNonTerminal and !checkedRules[j-1]) {
                         for (int k = 0; k < terminalsInRules[i-1].size(); k++) {
                             for (char sym : terminalsInRules[j-1]) {
