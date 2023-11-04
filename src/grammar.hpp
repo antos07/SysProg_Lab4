@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace grammar {
+    extern const char epsilon;
+
     class GrammarRuleOutput {
         std::vector<char> symbols_;
 
@@ -17,6 +19,10 @@ namespace grammar {
         GrammarRuleOutput() = delete;
 
         explicit GrammarRuleOutput(std::vector<char> &&symbols);
+
+        const std::vector<char> &getSymbols() const {
+            return symbols_;
+        }
 
         friend std::ostream &operator<<(std::ostream &out, const GrammarRuleOutput &grammarRuleOutput);
 
@@ -26,6 +32,12 @@ namespace grammar {
 
     using GrammarRule = std::pair<char, GrammarRuleOutput>;
     using Grammar = std::vector<GrammarRule>;
+
+    bool isTerminal(char a);
+
+    bool isInVector(char symbolToFind, const std::vector<char> &charVector);
+
+    std::vector<char> getNonTerminals(const Grammar &g);
 }
 
 #endif //SYSPROG_LAB4_GRAMMAR_HPP

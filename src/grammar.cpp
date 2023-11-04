@@ -9,6 +9,8 @@
 #include "grammar.hpp"
 
 namespace grammar {
+    const char epsilon = 'e';
+
     GrammarRuleOutput::GrammarRuleOutput(std::vector<char> &&symbols) : symbols_{std::move(symbols)} {
     }
 
@@ -22,5 +24,31 @@ namespace grammar {
         std::stringstream converter{};
         converter << *this;
         return converter.str();
+    }
+
+    bool isTerminal(char a) {
+        if (islower(a)) return true;
+        return false;
+    }
+
+    bool isInVector(char symbolToFind, const std::vector<char> &charVector) {
+
+        for (char c: charVector) {
+            if (c == symbolToFind) return true;
+        }
+
+        return false;
+    }
+
+    std::vector<char> getNonTerminals(const Grammar &g) {
+
+        std::vector<char> nonTerminals;
+        for (const auto &rule: g) {
+            char c = rule.first;
+            if (!isInVector(c, nonTerminals)) {
+                nonTerminals.push_back(c);
+            }
+        }
+        return nonTerminals;
     }
 }
