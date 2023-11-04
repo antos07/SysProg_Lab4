@@ -2,7 +2,6 @@
 #include "grammar.hpp"
 #include "readers.hpp"
 #include <vector>
-#include <format>
 #include <cstdlib>
 #include <fstream>
 #include <iterator>
@@ -10,12 +9,13 @@
 #include <set>
 #include "firstfollow.hpp"
 #include "parsing.hpp"
-
+#include "ast/tree.hpp"
+#include "ast/tree_visualization.hpp"
 
 int main(int argc, char *argv[]) {
 
     if (argc != 3) {
-        std::cerr << std::format("Usage: {} <path to the grammar file> <path to the input file>", argv[0]);
+        std::cerr << "Usage: " << argv[0] << " <path to the grammar file> <path to the input file>";
         return EXIT_FAILURE;
     }
     std::ifstream grammarFile{argv[1]};
@@ -55,6 +55,12 @@ int main(int argc, char *argv[]) {
     std::cout << "\nInput tokens:\n";
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
+
+    std::vector<int> appliedRules = {0, 4, 9, 11, 1, 2, 6, 9, 11, 2};
+    auto ast = ast::Tree(grammar, appliedRules);
+
+    auto viz = ast::GraphvizVisualizer();
+    viz.ToPNG("/Users/makskonevych/Desktop/graph.png", ast);
 
     return EXIT_SUCCESS;
 }
