@@ -1,12 +1,8 @@
-E → i a D
-E → p E m R k
-E → e
-D → V m E
-D → L o E
-R → V o E
-R → L m E
-V → Z
-V → n
-L → Z
-L → p E k
-Z → e
+S → B A
+A → + B A
+A → e
+B → D C
+C → * D C
+C → e
+D → ( S )
+D → a

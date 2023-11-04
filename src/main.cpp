@@ -1,15 +1,15 @@
 #include <iostream>
+#include <set>
+#include <map>
 #include "grammar.hpp"
+#include "parsing.hpp"
 #include "readers.hpp"
 #include <vector>
 #include <format>
 #include <cstdlib>
 #include <fstream>
 #include <iterator>
-#include <map>
-#include <set>
 #include "firstfollow.hpp"
-#include "parsing.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
         std::perror("The grammar file");
         return EXIT_FAILURE;
     }
-    std::ifstream inputFile{argv[2]};;
+    std::ifstream inputFile{argv[2]};
     if (!inputFile.is_open()) {
         std::perror("The input file");
         return EXIT_FAILURE;
@@ -56,5 +56,6 @@ int main(int argc, char *argv[]) {
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
 
+    parsing::syntacticAnalysis(grammar, tokens);
     return EXIT_SUCCESS;
 }

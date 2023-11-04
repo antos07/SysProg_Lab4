@@ -1,11 +1,13 @@
-//
-// Created by antos07 on 11/3/23.
-//
-
-#include <cassert>
+#include <iostream>
+#include <stack>
+#include <map>
+#include <set>
+#include <vector>
 #include <algorithm>
 #include "firstfollow.hpp"
 #include "parsing.hpp"
+
+using namespace std;
 
 namespace parsing {
     std::vector<std::set<char>> BuildIntermediateTable(const grammar::Grammar &grammar) {
@@ -60,5 +62,92 @@ namespace parsing {
         }
 
         return table;
+    }
+
+     void createManagingTable(vector<set<char>> terminalsInRules, grammar::Grammar grammar, map<char, map<char, int>> &managingTable) {
+        bool checkedRules[grammar.size()];
+        fill(checkedRules, checkedRules+grammar.size(), false);
+        for (int i = 1; i <= grammar.size(); i++) {
+            if (!checkedRules[i-1]) {
+                map<char, int> symbolMap;
+                char leftNonTerminal = grammar[i-1].first;
+                for (int k = 0; k < terminalsInRules[i-1].size(); k++) {
+                    for (char sym : terminalsInRules[i-1]) {
+                        symbolMap.insert({sym, i});
+                    }
+                }
+                for (int j = i+1; j <= grammar.size(); j++) {
+                    if (grammar[j-1].first == leftNonTerminal and !checkedRules[j-1]) {
+                        for (int k = 0; k < terminalsInRules[i-1].size(); k++) {
+                            for (char sym : terminalsInRules[j-1]) {
+                                symbolMap.insert({sym, j});
+                            }
+                        }
+                        checkedRules[j-1] = true;
+                    }
+                }
+                managingTable.insert({leftNonTerminal, symbolMap});
+                checkedRules[i-1] = true;
+            }
+        }
+    }
+
+    void syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme) {
+        map<char, map<char, int>> managingTable;
+        vector<set<char>> terminalsInRules = BuildIntermediateTable(grammar);
+        vector<int> chainAnalysis;
+        createManagingTable(terminalsInRules, grammar, managingTable);
+        stack<char> rules;
+        stack<char> lexeme;
+        lexeme.push('e');
+
+        for(int i = symbolsInLexeme.size()-1; i >= 0; i--) {
+            lexeme.push(symbolsInLexeme[i]);
+        }
+        bool error_exist = false;
+        char leftNonTerminal = grammar[0].first;
+        rules.push(leftNonTerminal);
+
+        cout << endl << "Lexeme: ";
+        do {
+            leftNonTerminal = rules.top();
+            rules.pop();
+            char topOnLexeme = lexeme.top();
+            if (leftNonTerminal != topOnLexeme) {
+                if (managingTable[leftNonTerminal].find(topOnLexeme) == managingTable[leftNonTerminal].end()) {
+                    error_exist = true;
+                    cout << lexeme.top();
+                    break;
+                }
+                chainAnalysis.push_back(managingTable[leftNonTerminal][topOnLexeme]);
+
+                vector <char> rightRule = grammar[(managingTable[leftNonTerminal][topOnLexeme])-1].second.getSymbols();
+                if (rightRule[0] != 'e') {
+                    for (int j = rightRule.size() - 1; j >= 0; j--) {
+                        rules.push(rightRule[j]);
+                    }
+                }
+            }
+            else {
+                if (lexeme.top() != 'e') {
+                    cout << lexeme.top() << " ";
+                    lexeme.pop();
+                }
+            }
+        }
+        while(!rules.empty());
+
+        //Result output
+        if (error_exist) {
+            cout << endl;
+            cout << "Syntax error on symbol " << lexeme.top();
+        }
+        else {
+            cout << endl;
+            cout << "Chain of used rules: ";
+            for (int rule_num : chainAnalysis) {
+                cout << rule_num << " ";
+            }
+        }
     }
 }

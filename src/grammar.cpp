@@ -27,7 +27,7 @@ namespace grammar {
     }
 
     bool isTerminal(char a) {
-        if (islower(a)) return true;
+        if (!std::isupper(a) && ! std::isspace(a)) return true;
         return false;
     }
 

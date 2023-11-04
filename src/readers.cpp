@@ -10,7 +10,7 @@
 
 namespace readers {
     static grammar::GrammarRule ParseRule(std::string &&line) {
-        std::regex ruleRegex{R"(\s*([A-Z])\s*→\s*((?:[a-zA-Z]\s*)+))"};
+        std::regex ruleRegex{R"(\s*([A-Z])\s*→\s*((?:\S\s*)+))"};
 
         std::smatch match;
         if (!std::regex_match(line, match, ruleRegex)) {
