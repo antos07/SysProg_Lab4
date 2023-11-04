@@ -16,6 +16,3 @@ add_executable(
         src/parsing.cpp
         src/parsing.hpp
 )
-        src/parsing.cpp
-        src/parsing.hpp)
-        src/grammar.hpp

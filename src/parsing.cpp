@@ -9,6 +9,7 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
+#include <queue>
 #include "firstfollow.hpp"
 #include "parsing.hpp"
 
@@ -68,6 +69,7 @@ namespace parsing {
 
         return table;
     }
+
      void createManagingTable(vector<set<char>> terminalsInRules, grammar::Grammar grammar, map<char, map<char, int>> &managingTable) {
         bool checkedRules[8];
         fill(checkedRules, checkedRules+8, false);
@@ -94,59 +96,64 @@ namespace parsing {
                 checkedRules[i-1] = true;
             }
         }
-
-        //Test output of managing table
-        for (const auto& outerPair : managingTable) {
-            char outerKey = outerPair.first;
-            const std::map<char, int>& innerMap = outerPair.second;
-
-            for (const auto& innerPair : innerMap) {
-                char innerKey = innerPair.first;
-                int innerValue = innerPair.second;
-
-                std::cout << "Outer Key: " << outerKey
-                          << ", Inner Key: " << innerKey
-                          << ", Value: " << innerValue << std::endl;
-            }
-        }
-        //
     }
 
-
-    void syntacticAnalysis(grammar::Grammar grammar) {
+    void syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme) {
         map<char, map<char, int>> managingTable;
-        vector <char> lex = {'(','a','+','a',')','*','a'};
-        vector<char> terminals = {'a', '(', ')', '+', '*', 'e'};
-        vector<char> nonTerminals = {'S', 'A', 'B', 'C', 'D'};
-        vector<set<char>> terminalsInRules = {{'(', 'a'}, {'+'}, {'e', ')'}, {'(', 'a'},
-                                              {'*'}, {'+', 'e', ')'}, {'('}, {'a'} };
+        vector<set<char>> terminalsInRules = BuildIntermediateTable(grammar);
+        vector<int> chainAnalysis;
         createManagingTable(terminalsInRules, grammar, managingTable);
         stack<char> rules;
         stack<char> lexeme;
+        lexeme.push('e');
 
-        for(int i = lex.size()-1; i >= 0; i--) {
-            lexeme.push(lex[i]);
+        for(int i = symbolsInLexeme.size()-1; i >= 0; i--) {
+            lexeme.push(symbolsInLexeme[i]);
         }
+        bool error_exist = false;
         char leftNonTerminal = grammar[0].first;
         rules.push(leftNonTerminal);
-        bool error_exist = false;
 
+        cout << endl << "Lexeme: ";
         do {
+            leftNonTerminal = rules.top();
+            rules.pop();
             char topOnLexeme = lexeme.top();
             if (leftNonTerminal != topOnLexeme) {
-                cout <<managingTable[leftNonTerminal][topOnLexeme] << " ";
-                vector <char> rightRule = grammar[(managingTable[leftNonTerminal][topOnLexeme])-1].second;
-                for (int j = rightRule.size()-1; j >= 0; j--) {
-                    rules.push(rightRule[j]);
+                if (managingTable[leftNonTerminal].find(topOnLexeme) == managingTable[leftNonTerminal].end()) {
+                    error_exist = true;
+                    cout << lexeme.top();
+                    break;
+                }
+                chainAnalysis.push_back(managingTable[leftNonTerminal][topOnLexeme]);
+
+                vector <char> rightRule = grammar[(managingTable[leftNonTerminal][topOnLexeme])-1].second.getSymbols();
+                if (rightRule[0] != 'e') {
+                    for (int j = rightRule.size() - 1; j >= 0; j--) {
+                        rules.push(rightRule[j]);
+                    }
                 }
             }
             else {
-                lexeme.pop();
+                if (lexeme.top() != 'e') {
+                    cout << lexeme.top() << " ";
+                    lexeme.pop();
+                }
             }
-            rules.pop();
         }
         while(!rules.empty());
 
-
+        //Result output
+        if (error_exist) {
+            cout << endl;
+            cout << "Syntax error on symbol " << lexeme.top();
+        }
+        else {
+            cout << endl;
+            cout << "Chain of used rules: ";
+            for (int rule_num : chainAnalysis) {
+                cout << rule_num << " ";
+            }
+        }
     }
 }

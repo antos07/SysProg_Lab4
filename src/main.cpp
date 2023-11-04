@@ -59,6 +59,6 @@ int main(int argc, char *argv[]) {
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
 
+    parsing::syntacticAnalysis(grammar, tokens);
     return EXIT_SUCCESS;
-    parsing::syntacticAnalysis(grammar);
 }
