@@ -9,10 +9,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iterator>
-#include <map>
-#include <set>
 #include "firstfollow.hpp"
-#include "parsing.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -26,7 +23,7 @@ int main(int argc, char *argv[]) {
         std::perror("The grammar file");
         return EXIT_FAILURE;
     }
-    std::ifstream inputFile{argv[2]};;
+    std::ifstream inputFile{argv[2]};
     if (!inputFile.is_open()) {
         std::perror("The input file");
         return EXIT_FAILURE;
