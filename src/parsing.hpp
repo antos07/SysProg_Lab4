@@ -10,7 +10,7 @@ using namespace std;
 namespace parsing {
     vector<std::set<char>> BuildIntermediateTable(const grammar::Grammar &grammar);
     void createManagingTable(vector<set<char>> terminalsInRules, grammar::Grammar grammar, map<char, map<char, int>> &managingTable);
-    void syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme);
+    std::pair<bool, std::vector<int>> syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme);
 }
 
 

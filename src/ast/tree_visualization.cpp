@@ -51,4 +51,10 @@ void ast::GraphvizVisualizer::Helper(Agraph_s *g, const ast::Tree::Node &node, A
         // recursively process the child
         Helper(g, child, agChild, idCount);
     }
+
+    // highlight if leaf
+    if (node.children.empty()) {
+        agsafeset(agNode, "style", "bold", "");
+        agsafeset(agNode, "color", "darkslategray3", "");
+    }
 }

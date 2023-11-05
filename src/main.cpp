@@ -15,8 +15,9 @@
 
 int main(int argc, char *argv[]) {
 
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <path to the grammar file> <path to the input file>";
+    if (argc != 3 && argc != 4) {
+        std::cerr << "Usage: " << argv[0]
+        << " <path to the grammar file> <path to the input file> <path to AST visualization destination>";
         return EXIT_FAILURE;
     }
     std::ifstream grammarFile{argv[1]};
@@ -29,6 +30,12 @@ int main(int argc, char *argv[]) {
         std::perror("The input file");
         return EXIT_FAILURE;
     }
+    bool saveViz = argc == 4;
+    std::string vizPath {};
+    if (saveViz) {
+        vizPath = argv[3];
+    }
+
 
     grammar::Grammar grammar{readers::ReadGrammar(grammarFile)};
     int ruleIndex{1};
@@ -57,13 +64,15 @@ int main(int argc, char *argv[]) {
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
 
-    parsing::syntacticAnalysis(grammar, tokens);
+    auto analysisRes = parsing::syntacticAnalysis(grammar, tokens);
 
-    std::vector<int> appliedRules = {0, 4, 9, 11, 1, 2, 6, 9, 11, 2};
-    auto ast = ast::Tree(grammar, appliedRules);
+    if (analysisRes.first && saveViz) {
+        auto ast = ast::Tree(grammar, analysisRes.second);
 
-    auto viz = ast::GraphvizVisualizer();
-    viz.ToPNG("/Users/makskonevych/Desktop/graph.png", ast);
+        auto viz = ast::GraphvizVisualizer();
+        std::cout << "Saving AST visualization to " << vizPath << '\n';
+        viz.ToPNG(vizPath, ast);
+    }
 
     return EXIT_SUCCESS;
 }

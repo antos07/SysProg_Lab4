@@ -92,7 +92,7 @@ namespace parsing {
         }
     }
 
-    void syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme) {
+    std::pair<bool, std::vector<int>> syntacticAnalysis(grammar::Grammar grammar, vector<char> symbolsInLexeme) {
         map<char, map<char, int>> managingTable;
         vector<set<char>> terminalsInRules = BuildIntermediateTable(grammar);
         vector<int> chainAnalysis;
@@ -141,13 +141,21 @@ namespace parsing {
         if (error_exist) {
             cout << endl;
             cout << "Syntax error on symbol " << lexeme.top();
+            return {false, {}};
         }
-        else {
-            cout << endl;
-            cout << "Chain of used rules: ";
-            for (int rule_num : chainAnalysis) {
-                cout << rule_num << " ";
-            }
+        cout << endl;
+        cout << "Chain of used rules: ";
+        for (int rule_num : chainAnalysis) {
+            cout << rule_num << " ";
         }
+        cout << '\n';
+
+        // Get indices of applied rules
+        std::vector<int> appliedRulesIdx = chainAnalysis;
+        for (int & i : appliedRulesIdx) {
+            --i;
+        }
+
+        return {true, appliedRulesIdx};
     }
 }
