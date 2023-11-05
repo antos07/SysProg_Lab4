@@ -1,12 +1,13 @@
 #include <iostream>
+#include <set>
+#include <map>
 #include "grammar.hpp"
+#include "parsing.hpp"
 #include "readers.hpp"
 #include <vector>
 #include <cstdlib>
 #include <fstream>
 #include <iterator>
-#include <map>
-#include <set>
 #include "firstfollow.hpp"
 #include "parsing.hpp"
 #include "ast/tree.hpp"
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]) {
         std::perror("The grammar file");
         return EXIT_FAILURE;
     }
-    std::ifstream inputFile{argv[2]};;
+    std::ifstream inputFile{argv[2]};
     if (!inputFile.is_open()) {
         std::perror("The input file");
         return EXIT_FAILURE;
@@ -55,6 +56,8 @@ int main(int argc, char *argv[]) {
     std::cout << "\nInput tokens:\n";
     std::vector<char> tokens{readers::ReadTokens(inputFile)};
     std::copy(tokens.cbegin(), tokens.cend(), std::ostream_iterator<char>{std::cout, " "});
+
+    parsing::syntacticAnalysis(grammar, tokens);
 
     std::vector<int> appliedRules = {0, 4, 9, 11, 1, 2, 6, 9, 11, 2};
     auto ast = ast::Tree(grammar, appliedRules);
